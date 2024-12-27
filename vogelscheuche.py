@@ -51,6 +51,8 @@ def main():
             results = detector.process_frame(image)
             if detector.is_heron_detected(results):
                 alarm.trigger_alarm()
+            else:
+                alarm.disable_alarm()
                 
     except KeyboardInterrupt:
         print("\nProgram terminated")

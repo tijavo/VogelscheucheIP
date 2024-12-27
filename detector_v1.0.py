@@ -26,6 +26,7 @@ class CombinedDetector:
                  class_names_path: str,
                  output_dir: str = "detected_objects",
                  confidence_threshold: float = 0.5,
+                 heronscore_threshold: int = 60,
                  debug_mode: bool = True,
                  offset = 5):
         """
@@ -34,7 +35,8 @@ class CombinedDetector:
         self.confidence_threshold = confidence_threshold
         self.bounding_box_offset = offset
         self.debug_mode = debug_mode
-
+        self.heronscore_threshold = heronscore_threshold
+        
         # Load class names for ResNet
         with open(class_names_path, 'r') as file:
             self.class_names = json.load(file)
@@ -206,9 +208,6 @@ class CombinedDetector:
         # ResNet Classification
         image = Image.fromarray(image_array)
         
-        if self.debug_mode:
-            image.save(os.path.join(self.session_dir, "resnet_input.png"))
-        
         resnet_input = np.array([self._preprocess(image, 224, 224)])
         
         with InferVStreams(self.resnet_network_group, self.resnet_input_params, self.resnet_output_params) as resnet_pipeline:
@@ -281,32 +280,67 @@ class CombinedDetector:
             'num_detections': num_detections
         }
 
+    def is_heron_detected(self, results):
+        for i,result in enumerate(results):
+            heronscore = 0
+            for det in result:
+                if 'heron' in det['class'] or 'crane' in det['class']:
+                    heronscore = heronscore + det['confidence']
+            if heronscore > self.heronscore_threshold:
+                return True
+        return False
 
-def is_heron_detected(results):
-    for i,result in enumerate(results):
-        heronscore = 0
-        for det in result:
-            if 'heron' in det['class'] or 'crane' in det['class']:
-                heronscore = heronscore + det['confidence']
-        if heronscore > 60:
-            return True
-    return False
+
+import argparse
+import yaml
+import sys
+
+def load_yaml_file(file_path):
+    """Lädt eine YAML-Datei und gibt deren Inhalt zurück."""
+    try:
+        with open(file_path, 'r') as file:
+            return yaml.safe_load(file)
+    except Exception as e:
+        print(f"Fehler beim Laden der YAML-Datei: {e}")
+        sys.exit(1)
 
 def main():
-    detector = CombinedDetector(
-        yolo_model_path='./resources/yolov8n.hef',
-        resnet_model_path='./resources/resnet_v1_18.hef',
-        class_names_path='./resources/imagenet_names.json',
-        output_dir='detected_objects',
-        confidence_threshold=0.3,
-        debug_mode=True
+    parser = argparse.ArgumentParser(description="Ein Skript, welches von der Raspi Cam einen Input nimmt, ein Modell zur Objekterkennung, eins zur Classifizierung benutzt und schaut ob ein Fischreiher im Bild ist.")
+    parser.add_argument(
+        "--config",
+        type=str,
+        help="Pfad zur YAML-Konfigurationsdatei",
+        required=False
     )
+    args = parser.parse_args()
+    
+    if args.config:
+        config = load_yaml_file(args.config)
+        detector = CombinedDetector(
+            yolo_model_path=config.get('yolo_model_path', './resources/yolov8n.hef'),
+            resnet_model_path=config.get('resnet_model_path', './resources/resnet_v1_18.hef'),
+            class_names_path=config.get('class_names_path', './resources/imagenet_names.json'),
+            output_dir=config.get('output_dir', 'detected_objects'),
+            confidence_threshold=config.get('confidence_threshold', 0.3),
+            heronscore_threshold=config.get('heronscore_threshold', 60),
+            debug_mode=config.get('debug_mode', False)
+        )
+    else:
+        detector = CombinedDetector(
+            yolo_model_path='./resources/yolov8n.hef',
+            resnet_model_path='./resources/resnet_v1_18.hef',
+            class_names_path='./resources/imagenet_names.json',
+            output_dir='detected_objects',
+            confidence_threshold=0.3,
+            heronscore_threshold=60,
+            debug_mode=True
+        )
     try:
         detector.start_camera()
         while True:
             image = detector.capture_image_fake("./resources/Pictures/ReiherTest.png")
             results = detector.process_frame(image)
-            if is_heron_detected(results):
+            if detector.is_heron_detected(results):
                 print("Heron detected")
             else:
                 print("No Heron detected")

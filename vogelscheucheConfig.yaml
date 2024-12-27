@@ -4,4 +4,4 @@ class_names_path: ./resources/imagenet_names.json
 output_dir: detected_objects
 confidence_threshold: 0.3
 heronscore_threshold: 60
-debug_mode: False
+debug_mode: True

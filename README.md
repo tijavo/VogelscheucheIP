@@ -18,7 +18,7 @@ source /home/vogelscheuche/Vogelscheuche_Workspace/WsEnv/bin/activate
 
 ### Neues Virtual Environment erstellen
 
-Wichtig beim erstellen vom Venv ist es, dass die HailoRT Library installiert wird. Diese muss von der Hailo Website heruntergeladen werden, dafür braucht man einen Account. Wichtig sind auch die System Packages, die für die Kamera benutzt werden. Mehr dazu auf der [Github Seite von picamera2](https://github.com/raspberrypi/picamera2).
+Wichtig beim erstellen vom Venv ist es, dass die HailoRT Library installiert wird. Diese muss von der [Hailo Website](https://hailo.ai/developer-zone/software-downloads/) heruntergeladen werden, dafür braucht man einen Account. Wichtig sind auch die System Packages, die für die Kamera benutzt werden. Mehr dazu auf der [Github Seite von picamera2](https://github.com/raspberrypi/picamera2).
 
 Die korrekte Numpy Version ist auch wichtig, da es sonst zu Fehlern kommen kann.
 

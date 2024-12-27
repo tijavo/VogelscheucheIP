@@ -1,7 +1,9 @@
 import argparse
 import yaml
 import sys
+
 from vogelscheucheDetector import CombinedDetector
+from vogelscheucheAlarm import Alarm
 
 def load_yaml_file(file_path):
     """Lädt eine YAML-Datei und gibt deren Inhalt zurück."""
@@ -21,10 +23,12 @@ def main():
         required=False
     )
     args = parser.parse_args()
-    
     if args.config:
         config = load_yaml_file(args.config)
-        detector = CombinedDetector(
+    else:
+        config = {}
+        
+    detector = CombinedDetector(
             yolo_model_path=config.get('yolo_model_path', './resources/yolov8n.hef'),
             resnet_model_path=config.get('resnet_model_path', './resources/resnet_v1_18.hef'),
             class_names_path=config.get('class_names_path', './resources/imagenet_names.json'),
@@ -33,25 +37,20 @@ def main():
             heronscore_threshold=config.get('heronscore_threshold', 60),
             debug_mode=config.get('debug_mode', False)
         )
-    else:
-        detector = CombinedDetector(
-            yolo_model_path='./resources/yolov8n.hef',
-            resnet_model_path='./resources/resnet_v1_18.hef',
-            class_names_path='./resources/imagenet_names.json',
-            output_dir='detected_objects',
-            confidence_threshold=0.3,
-            heronscore_threshold=60,
-            debug_mode=True
-        )
+    
+    alarm = Alarm(
+        alarm_duration=config.get('alarm_duration', 20),
+        sirene_wait_time=config.get('sirene_waitTime', 5),
+        blink_interval=config.get('blink_interval', 1)
+    )
+    
     try:
         detector.start_camera()
         while True:
             image = detector.capture_image_fake("./resources/Pictures/ReiherTest.png")
             results = detector.process_frame(image)
             if detector.is_heron_detected(results):
-                print("Heron detected")
-            else:
-                print("No Heron detected")
+                alarm.trigger_alarm()
                 
     except KeyboardInterrupt:
         print("\nProgram terminated")

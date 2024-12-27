@@ -299,8 +299,7 @@ def main():
         debug_mode=False
     )
     try:
-        detector.start_camera()
-        while True:
+        if True:
             image = detector.capture_image_fake("./resources/Pictures/ReiherTest.png")
             results = detector.process_frame(image)
             if detector.is_heron_detected(results):
@@ -310,8 +309,6 @@ def main():
                 
     except KeyboardInterrupt:
         print("\nProgram terminated")
-    finally:
-        detector.stop_camera()
 
 
 if __name__ == '__main__':

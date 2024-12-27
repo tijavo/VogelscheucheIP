@@ -10,3 +10,4 @@ output_dir: detected_objects
 
 alarm_duration: 3
 sirene_waitTime: 1
+blink_interval: 0.5

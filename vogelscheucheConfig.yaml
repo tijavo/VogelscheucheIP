@@ -1,0 +1,7 @@
+yolo_model_path: ./resources/yolov8n.hef
+resnet_model_path: ./resources/resnet_v1_18.hef
+class_names_path: ./resources/imagenet_names.json
+output_dir: detected_objects
+confidence_threshold: 0.3
+heronscore_threshold: 60
+debug_mode: False

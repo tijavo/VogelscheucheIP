@@ -294,9 +294,9 @@ def is_heron_detected(results):
 
 def main():
     detector = CombinedDetector(
-        yolo_model_path='yolov8n.hef',
-        resnet_model_path='resnet_v1_18.hef',
-        class_names_path='imagenet_names.json',
+        yolo_model_path='./resources/yolov8n.hef',
+        resnet_model_path='./resources/resnet_v1_18.hef',
+        class_names_path='./resources/imagenet_names.json',
         output_dir='detected_objects',
         confidence_threshold=0.3,
         debug_mode=True
@@ -304,7 +304,7 @@ def main():
     try:
         detector.start_camera()
         while True:
-            image = detector.capture_image()
+            image = detector.capture_image_fake("./resources/Pictures/ReiherTest.png")
             results = detector.process_frame(image)
             if is_heron_detected(results):
                 print("Heron detected")

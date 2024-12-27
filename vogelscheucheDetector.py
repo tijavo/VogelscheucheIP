@@ -79,9 +79,9 @@ class CombinedDetector:
         self.output_dir = output_dir
         if debug_mode:
             self.session_dir = self._create_session_dir()
-            print("YOLO Model:", yolo_model_path)
-            print("ResNet Model:", resnet_model_path)
-            print("Output Directory:", self.session_dir)
+        print("YOLO Model:", yolo_model_path)
+        print("ResNet Model:", resnet_model_path)
+        print("Output Directory:", self.session_dir)
 
     def _create_session_dir(self) -> str:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

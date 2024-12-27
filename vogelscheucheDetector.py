@@ -232,14 +232,11 @@ class CombinedDetector:
     
     def process_frame_yolo(self, image_array: np.ndarray) -> list:
         """Processes a frame with YOLO"""
-        results = []
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
 
         # YOLO Detection
         image = Image.fromarray(image_array)
         yolo_input = np.array([self._preprocess(image, 640, 640)])
         with InferVStreams(self.yolo_network_group, self.yolo_input_params, self.yolo_output_params) as yolo_pipeline:
-            yolo_input_data = {self.yolo_input_info.name: yolo_input}
             with self.yolo_network_group.activate():
                 yolo_outputs = yolo_pipeline.infer(yolo_input)
             detections = self._process_yolo_output(yolo_outputs[self.yolo_output_info.name][0])

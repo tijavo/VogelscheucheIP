@@ -1,7 +1,6 @@
-# VogelscheucheIP
-FH Aachen Vogelscheuchen IP
+# FH Aachen Vogelscheuchen IP
 
-Dieses IP ist ein Projekt der FH Aachen unter dem Professor Ringbeck. Es handelt sich um eine Vogelscheuche, die mit einem Raspberry Pi und einer Kamera ausgestattet ist. Die Kamera nimmt Bilder auf und wertet diese aus. Zuerst wird ein Bild gemacht, dann wird das Bild analysiert und die Objekte auf dem Bild werden erkannt. Für jedes erkannte Objekt wird eine Klassifizerung durchgeführt. Wenn das Objekt als Fischreiher (Kranich) erkannt wird, wird ein Alarm ausgelöst. Der Alarm besteht aus einem lauten Geräusch und einer LED, die blinkt. 
+Dieses IP ist ein Projekt der FH Aachen unter dem Professor Ringbeck. Es handelt sich um eine Vogelscheuche, die mit einem Raspberry Pi und einer Kamera ausgestattet ist. Die Kamera nimmt Bilder auf und wertet diese aus. Zuerst wird ein Bild gemacht, dann wird das Bild analysiert und die Objekte auf dem Bild werden erkannt. Für jedes erkannte Objekt wird eine Klassifizerung durchgeführt. Wenn das Objekt als Fischreiher (Kranich) erkannt wird, wird ein Alarm ausgelöst. Der Alarm besteht aus einem lauten Geräusch und einer LED, um den Vogel zu verscheuchen. 
 
 ## Models und AI-Hat
 
@@ -35,3 +34,7 @@ In der vogelscheucheConfig.yaml Datei können die gewünschten Einstellungen ge�
 ```bash
 python vogelscheucheDetector.py --config vogelscheucheConfig.yaml
 ```
+
+# Wiki
+
+Im [Wiki](https://github.com/tijavo/VogelscheucheIP/wiki) sind alle wichtigen Informationen zum Projekt zu finden. Dort sind auch die Schritte zum erstellen des Models und des AI-Hats beschrieben.

@@ -1,7 +1,8 @@
 import argparse
 import yaml
 import sys
-
+import gpiod
+import time
 from vogelscheucheDetector import CombinedDetector
 from vogelscheucheAlarm import Alarm
 
@@ -39,20 +40,34 @@ def main():
         )
     
     alarm = Alarm(
-        alarm_duration=config.get('alarm_duration', 20),
-        sirene_wait_time=config.get('sirene_waitTime', 5),
-        blink_interval=config.get('blink_interval', 1)
+        max_frames = config.get('max_frames', 10),
+        activation_threshold = config.get('activation_threshold', 3),
     )
+    
+    PIR_Timeout = config.get('PIR_Timeout', 10)
+    
+    PIR_PIN = 23
+    gpiod_chip = gpiod.Chip('gpiochip0')
+    pir_line = gpiod_chip.get_line(PIR_PIN)
+    pir_line.request(consumer='PIR', type=gpiod.LINE_REQ_DIR_IN)
+    
     
     try:
         detector.start_camera()
         while True:
-            image = detector.capture_image_fake("./resources/Pictures/ReiherTest.png")
-            results = detector.process_frame(image)
-            if detector.is_heron_detected(results):
-                alarm.trigger_alarm()
-            else:
-                alarm.disable_alarm()
+            time.sleep(0.2)
+            if pir_line.get_value() == 1:
+                print("Bewegung erkannt!")
+                startTime = time.time()
+                while startTime + PIR_Timeout > time.time():
+                    image = detector.capture_image()
+                    results = detector.process_frame(image)
+                    if detector.is_heron_detected(results):
+                        alarm.counter_plus()
+                    else:
+                        alarm.counter_minus()
+                print("Scannen zuende")
+                alarm.disable_sirene()
                 
     except KeyboardInterrupt:
         print("\nProgram terminated")

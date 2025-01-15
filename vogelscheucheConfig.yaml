@@ -1,13 +1,19 @@
+# Detection settings
 yolo_model_path: ./resources/yolov8n.hef
 resnet_model_path: ./resources/resnet_v1_18.hef
 class_names_path: ./resources/imagenet_names.json
 
+# Algorithm settings
 confidence_threshold: 0.3
-heronscore_threshold: 60
+heronscore_threshold: 20
 
-debug_mode: False
+# Alarm settings
+max_frames: 10
+activation_threshold: 3
+
+# PIR settings
+PIR_Timeout: 10
+
+# Debug settings
+debug_mode: True
 output_dir: detected_objects
-
-alarm_duration: 3
-sirene_waitTime: 1
-blink_interval: 0.5

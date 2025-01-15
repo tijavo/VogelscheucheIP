@@ -17,3 +17,7 @@ PIR_Timeout: 10
 # Debug settings
 debug_mode: True
 output_dir: detected_objects
+
+# GPIO settings
+PIR_PIN: 23
+SIRENE_PIN: 24

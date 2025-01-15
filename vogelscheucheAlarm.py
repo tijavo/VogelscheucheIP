@@ -3,22 +3,19 @@ import threading
 import gpiod
 import time
 
-# GPIO-Setup
-PIR_SENSOR_PIN = 23  # Eingang für den PIR-Sensor
-SIRENE_PIN = 24         # Ausgang für die LED
 
 class Alarm:
     def __init__(
                     self, 
                     max_frames: int = 10, # How many frames will be captured
-                    activation_threshold: int = 3 # How many frames need to be positive to trigger the alarm
+                    activation_threshold: int = 3, # How many frames need to be positive to trigger the alarm
+                    SIRENE_PIN: int = 24
                  ):
         
 
 
         # GPIO-Modus setzen
         chip = gpiod.Chip('gpiochip4')
-        
         self.sirene_line = chip.get_line(SIRENE_PIN)
         self.sirene_line.request(consumer='vogelscheucheAlarm', type=gpiod.LINE_REQ_DIR_OUT)
         self.sirene_line.set_value(0)

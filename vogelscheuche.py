@@ -41,12 +41,14 @@ def main():
     alarm = Alarm(
         max_frames = config.get('max_frames', 10),
         activation_threshold = config.get('activation_threshold', 3),
+        SIRENE_PIN=config.get('SIRENE_PIN', 24)
     )
     
     PIR_Timeout = config.get('PIR_Timeout', 10)
     
     # GPIO-Setup
-    PIR_PIN = 23
+    PIR_PIN = config.get('PIR_PIN', 23)
+    
     gpiod_chip = gpiod.Chip('gpiochip0')
     pir_line = gpiod_chip.get_line(PIR_PIN)
     pir_line.request(consumer='PIR', type=gpiod.LINE_REQ_DIR_IN)

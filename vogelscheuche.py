@@ -34,7 +34,6 @@ def main():
             resnet_model_path=config.get('resnet_model_path', './resources/resnet_v1_18.hef'),
             class_names_path=config.get('class_names_path', './resources/imagenet_names.json'),
             output_dir=config.get('output_dir', 'detected_objects'),
-            confidence_threshold=config.get('confidence_threshold', 0.3),
             heronscore_threshold=config.get('heronscore_threshold', 60),
             debug_mode=config.get('debug_mode', False)
         )
@@ -46,6 +45,7 @@ def main():
     
     PIR_Timeout = config.get('PIR_Timeout', 10)
     
+    # GPIO-Setup
     PIR_PIN = 23
     gpiod_chip = gpiod.Chip('gpiochip0')
     pir_line = gpiod_chip.get_line(PIR_PIN)

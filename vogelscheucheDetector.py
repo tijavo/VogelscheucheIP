@@ -25,14 +25,12 @@ class CombinedDetector:
                  resnet_model_path: str,
                  class_names_path: str,
                  output_dir: str = "detected_objects",
-                 confidence_threshold: float = 0.5,
                  heronscore_threshold: int = 60,
                  debug_mode: bool = True,
                  offset = 5):
         """
         Initializes the combined detector with YOLO and ResNet
         """
-        self.confidence_threshold = confidence_threshold
         self.bounding_box_offset = offset
         self.debug_mode = debug_mode
         self.heronscore_threshold = heronscore_threshold
@@ -288,7 +286,6 @@ def main():
         resnet_model_path='./resources/resnet_v1_18.hef',
         class_names_path='./resources/imagenet_names.json',
         output_dir='detected_objects',
-        confidence_threshold=0.3,
         heronscore_threshold=60,
         debug_mode=False
     )

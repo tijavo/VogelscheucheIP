@@ -45,6 +45,8 @@ class Alarm:
         self.sirene_line.set_value(1)
   
     def disable_sirene(self):
+        if not self.sirene_on:
+            return
         print("Alarm ausgeschaltet")
         self.sirene_on = False
         self.sirene_line.set_value(0)

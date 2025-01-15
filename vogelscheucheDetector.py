@@ -144,7 +144,7 @@ class CombinedDetector:
         
         bboxes = detections['detection_boxes']
         if len(bboxes) == 0:
-            print("No Bounding Boxes found")
+            #print("No Bounding Boxes found")
             return results
         
         img_w, img_h = image.shape[1], image.shape[0]
@@ -152,18 +152,11 @@ class CombinedDetector:
         for i,box in enumerate(bboxes):
             x1, y1, x2, y2 = box
             
-            if self.debug_mode:
-                print(f"\nBox {i} transformation:")
-                print(f"Original normalized coords: {x1:.3f}, {y1:.3f}, {x2:.3f}, {y2:.3f}")
-            
             # Erst horizontale Spiegelung (x-Achse wird gespiegelt)
             mirror_x1 = 1 - x2  # x1 wird zu (1-x2)
             mirror_x2 = 1 - x1  # x2 wird zu (1-x1)
             mirror_y1 = y1      # y-Koordinaten bleiben zunächst gleich
             mirror_y2 = y2
-            
-            if self.debug_mode:
-                print(f"After mirroring: {mirror_x1:.3f}, {mirror_y1:.3f}, {mirror_x2:.3f}, {mirror_y2:.3f}")
             
             # Dann 90 Grad Rotation nach links
             # Bei 90° Links-Rotation: x wird zu y, y wird zu (1-x)
@@ -283,6 +276,7 @@ class CombinedDetector:
             for det in result:
                 if 'heron' in det['class'] or 'crane' in det['class']:
                     heronscore = heronscore + det['confidence']
+            #print(f"Box {i} Heronscore: {heronscore}")
             if heronscore > self.heronscore_threshold:
                 return True
         return False

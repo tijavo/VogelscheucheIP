@@ -6,6 +6,10 @@ import time
 from vogelscheucheDetector import CombinedDetector
 from vogelscheucheAlarm import Alarm
 
+from flask import Flask, Response, render_template, request
+import threading
+import cv2
+
 def load_yaml_file(file_path):
     """Lädt eine YAML-Datei und gibt deren Inhalt zurück."""
     try:
@@ -53,12 +57,14 @@ def main():
     pir_line = gpiod_chip.get_line(PIR_PIN)
     pir_line.request(consumer='PIR', type=gpiod.LINE_REQ_DIR_IN)
     
+    global image
+    global results
     
     try:
         detector.start_camera()
         while True:
             time.sleep(0.2)
-            if pir_line.get_value() == 1:
+            if True or pir_line.get_value() == 1:
                 print("Bewegung erkannt!")
                 startTime = time.time()
                 while startTime + PIR_Timeout > time.time():
@@ -78,5 +84,46 @@ def main():
         detector.stop_camera()
 
 
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    """Startseite mit eingebettetem Video-Stream"""
+    return """
+    <html>
+        <head>
+            <title>Raspberry Pi Kamera Stream</title>
+        </head>
+        <body>
+            <h1>Live-Stream der Raspberry Pi Kamera</h1>
+            <img src="/video_feed" width="640" height="480">
+        </body>
+    </html>
+    """
+    
+def generate():
+    global image
+    while True:
+        if image is None:
+            continue
+        _, buffer = cv2.imencode('.jpg', image)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@app.route('/video_feed')
+def video_feed():
+    """Ruft den Video-Feed als HTTP-Stream ab"""
+    return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+def run_flask():
+    """Startet den Flask-Server"""
+    print("Starting Flask server")
+    app.run(host='0.0.0.0', port=8080, debug=False, threaded=True)
+    print("Cursed Print")
+
 if __name__ == '__main__':
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
     main()
